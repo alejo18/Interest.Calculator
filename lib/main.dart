@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
       home: MyHomePage(title: 'Interest App'),
     );
@@ -44,7 +44,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+
+  final amountController = TextEditingController();
+  final monthsController = TextEditingController();
+  final rateController = TextEditingController();
+  final taxesController = TextEditingController();
+
+  //int _counter = 0;
+  double _result = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -54,6 +61,21 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+    });
+  }
+
+  void _calculateInterest() {
+    setState(() {
+      int count = int.parse(amountController.text);
+      int end = int.parse(amountController.text) * int.parse(monthsController.text);
+      double rate = (double.parse(rateController.text) / 100);
+      double interest = 0;
+
+      while(count <= end){
+        interest = interest + (count * rate);
+        count += int.parse(amountController.text);
+      }
+      _result = interest - (interest * (double.parse(taxesController.text) / 100));
     });
   }
 
@@ -71,7 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(30.0),
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -89,38 +112,70 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Center(
-              child: Container(
-                height: 300.0,
-                width: 300.0,
-                color: Colors.yellow,
-                child: Align(
-                  alignment: FractionalOffset(0.2, 0.6),
-                  child: Container(
-                    height: 40.0,
-                    width: 40.0,
-                    color: Colors.red,
-                  ),
+            Text(
+              'Investment Calculator',
+            ),
+            TextField(
+                controller: amountController,
+                decoration: InputDecoration(
+                    labelText: 'Enter the monthly amount',
+                    hintText: 'Please enter an amount'
                 ),
+                keyboardType: TextInputType.number
+            ),
+            TextField(
+                controller: monthsController,
+                decoration: InputDecoration(
+                    labelText: 'Enter the number of months',
+                    hintText: 'Please enter an number'
+                ),
+                keyboardType: TextInputType.number
+            ),
+            TextField(
+                controller: rateController,
+                decoration: InputDecoration(
+                    labelText: 'Enter the profit percentage',
+                    hintText: 'Please enter an percentage'
+                ),
+                keyboardType: TextInputType.number
+            ),
+            TextField(
+                controller: taxesController,
+                decoration: InputDecoration(
+                    labelText: 'Enter the investment tax percentage',
+                    hintText: 'Please enter the percentage',
+                ),
+                keyboardType: TextInputType.number
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: (
+                  Text(
+                    'Your investment profit of ' + amountController.text + ' for ' + monthsController.text + ' month(s) is:',
+                  )
               ),
             ),
-            TextField(controller: TextEditingController()),
-            Text(
-              'You have clicked the button this many times:',
+            Padding(
+              padding: const EdgeInsets.only(top: 25),
+              child: (
+                  Text(
+                    '$_result',
+                    style: Theme.of(context).textTheme.display1,
+                  )
+              ),
             ),
-            Text(
+            /*Text(
               '$_counter',
               style: Theme.of(context).textTheme.display1,
-            ),
+            ),*/
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        onPressed: _calculateInterest,
+        tooltip: 'Calculate',
+        child: Icon(Icons.attach_money),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
